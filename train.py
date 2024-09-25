@@ -64,6 +64,7 @@ if __name__ == '__main__':
     all_log_data = []
     train_pgd = PGD(args.train_step, args.train_alpha / 255., args.train_eps / 255., args.norm, False, normalize)
     test_pgd = PGD(args.test_step, args.test_alpha / 255., args.test_eps / 255., args.norm, False, normalize)
+    print(args.test_eps)
 
     for epoch in range(args.epochs):
         start_time = time()
@@ -103,6 +104,7 @@ if __name__ == '__main__':
         for x, y in test_loader:
             
             x, y = x.to(device), y.to(device)
+            print(x[0]) 
             # clean
             output = model(normalize(x)).detach()
             loss = criterion(output, y)
@@ -111,6 +113,7 @@ if __name__ == '__main__':
             log_data[3] += (output.max(1)[1] == y).float().sum().item()
             #continue
             delta = test_pgd.perturb(model, x, y)
+            print((x+delta)[0])
             output = model(normalize(x + delta)).detach()
             loss = criterion(output, y)
             
