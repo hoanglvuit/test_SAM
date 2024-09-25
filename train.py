@@ -104,7 +104,6 @@ if __name__ == '__main__':
         for x, y in test_loader:
             
             x, y = x.to(device), y.to(device)
-            print(x[0]) 
             # clean
             output = model(normalize(x)).detach()
             loss = criterion(output, y)
@@ -113,7 +112,7 @@ if __name__ == '__main__':
             log_data[3] += (output.max(1)[1] == y).float().sum().item()
             #continue
             delta = test_pgd.perturb(model, x, y)
-            print((x+delta)[0])
+            print(delta)
             output = model(normalize(x + delta)).detach()
             loss = criterion(output, y)
             
