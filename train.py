@@ -112,12 +112,12 @@ if __name__ == '__main__':
             log_data[3] += (output.max(1)[1] == y).float().sum().item()
             #continue
             delta = test_pgd.perturb(model, x, y)
-            print(delta)
-            output = model(normalize(x + delta)).detach()
-            loss = criterion(output, y)
+            x = x + delta
+            outputr = model(normalize(x)).detach()
+            lossr = criterion(outputr, y)
             
-            log_data[4] += (loss * len(y)).item()
-            log_data[5] += (output.max(1)[1] == y).float().sum().item()
+            log_data[4] += (lossr * len(y)).item()
+            log_data[5] += (outputr.max(1)[1] == y).float().sum().item()
         
         log_data = np.array(log_data)
         log_data[0] /= 60000
