@@ -96,6 +96,14 @@ if __name__ == '__main__':
                 output_2 = model(normalize(x + delta))
                 criterion(output_2, y).backward()
                 opt.second_step(zero_grad=True)
+            elif args.opt == 'FSAM' : 
+                loss.backward()
+                opt.first_step(zero_grad=True)
+
+                output_2 = model(normalize(x + delta))
+                criterion(output_2, y).backward()
+                opt.second_step(zero_grad=True)                
+
             
             log_data[0] += (loss * len(y)).item()
             log_data[1] += (output.max(1)[1] == y).float().sum().item()
