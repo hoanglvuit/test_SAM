@@ -9,8 +9,7 @@ from time import time
 
 from utils import *
 from model import PreActResNet18
-from sam import SAM
-
+from sam import SAM,FriendlySAM
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -18,7 +17,7 @@ def get_args():
     parser.add_argument('--dataset', default='cifar10', choices=['cifar10', 'cifar100'])
     parser.add_argument('--epochs', default=100, type=int)
     parser.add_argument('--max-lr', default=0.1, type=float)
-    parser.add_argument('--opt', default='SAM', choices=['SAM', 'SGD'])
+    parser.add_argument('--opt', default='SAM', choices=['SAM', 'SGD','FSAM'])
     parser.add_argument('--batch-size', default=128, type=int)
     parser.add_argument('--device', default=0, type=int)
     parser.add_argument('--adv', action='store_true')
@@ -59,12 +58,14 @@ if __name__ == '__main__':
     elif args.opt == 'SAM':
         base_opt = torch.optim.SGD
         opt = SAM(params, base_opt,lr=args.max_lr, momentum=0.9, weight_decay=5e-4, rho=args.rho)
+    elif args.opt == "FSAM" : 
+        base_opt = torch.optim.SGD 
+        opt  = FriendlySAM(params, base_opt,lr=args.max_lr, momentum=0.9, weight_decay=5e-4, rho=args.rho)
     normalize = normalize_cifar if dataset == 'cifar10' else normalize_cifar100
 
     all_log_data = []
     train_pgd = PGD(args.train_step, args.train_alpha / 255., args.train_eps / 255., args.norm, False, normalize)
     test_pgd = PGD(args.test_step, args.test_alpha / 255., args.test_eps / 255., args.norm, False, normalize)
-    print(args.test_eps)
 
     for epoch in range(args.epochs):
         start_time = time()
